@@ -57,11 +57,11 @@
             <div class="full declaration"><input required type="checkbox"><span>I hereby declare that the above information is true and correct to the best of my knowledge. I agree to abide by the rules and guidelines of ICAI Pali Circ during the industrial visit.</span></div>
           </div>
           <div class="instructions"><h3>IMPORTANT INSTRUCTIONS</h3><ul><li>Registration will be confirmed only after successful payment.</li><li>Follow all instructions given by coordinators during the trip.</li></ul></div>
-          <button class="submit" type="submit" id="submitBtn">SUBMIT REGISTRATION</button><div id="statusMsg" style="margin-top:12px;font-weight:800;text-align:center;"></div>
+          <div id="statusMsg" style="margin-top:12px;font-weight:800;text-align:center;"></div>
         </form>
         <aside>
           <div class="card"><div class="payhead">₹ ONLINE PAYMENT</div><div class="paybody"><h3>Registration Fees</h3><div class="fee">₹2500/-</div><p>(Per Participant)</p><div class="steps"><b>PAYMENT MODE</b><div class="upi">UPI ONLY</div><p>Google Pay / PhonePe / Paytm / BHIM / Any UPI App</p></div><div id="qrBox" class="qrbox"><img id="upiQr" alt="UPI QR Code"><div class="tiny">Scan QR or tap Pay Now</div></div><a class="paybtn" id="payNowBtn" href="#">PAY NOW ₹2500/-</a><div class="openhint">Tap Pay Now to open any UPI app on Android/iPhone. Amount ₹2500 will auto-fill.</div><div class="appgrid"><a class="appbtn" id="gpayBtn" href="#">Google Pay</a><a class="appbtn" id="phonePeBtn" href="#">PhonePe</a></div><button type="button" class="copybtn" id="copyUpiBtn">COPY UPI ID</button><div class="steps"><b>PAYMENT STEPS</b><br>1. Tap Pay Now or scan QR<br>2. Pay exactly ₹2500 through UPI<br>3. Copy Transaction ID / UTR from your UPI app<br>4. Upload payment screenshot below<br>5. Submit registration form</div><div class="paywarning">Payment is verified manually after submission.</div></div></div>
-          <div class="card after"><div class="topnote"><b>✓ AFTER PAYMENT</b><br>Please fill Transaction ID and upload payment screenshot below.</div><div class="body"><label>Transaction ID / UTR No. <span class="req">*</span></label><input required name="transactionId" id="transactionId" placeholder="Enter Transaction ID / UTR"><br><br><label>Payment Screenshot <span class="req">*</span></label><div class="upload">☁️<br><b>Upload Screenshot</b><br><input required type="file" name="paymentScreenshot" id="paymentScreenshot" accept="image/png,image/jpeg,image/jpg"></div><div class="mandatory">Screenshot is Mandatory *</div></div></div>
+          <div class="card after"><div class="topnote"><b>✓ AFTER PAYMENT</b><br>Please enter Transaction ID and upload payment screenshot. Submit button will appear after screenshot upload.</div><div class="body"><label>Transaction ID / UTR No. <span class="req">*</span></label><input required name="transactionId" id="transactionId" placeholder="Enter Transaction ID / UTR"><br><br><label>Payment Screenshot <span class="req">*</span></label><div class="upload">☁️<br><b>Upload Screenshot</b><br><input required type="file" name="paymentScreenshot" id="paymentScreenshot" accept="image/png,image/jpeg,image/jpg"></div><div class="mandatory">Screenshot is Mandatory *</div><button class="submit" type="submit" form="registrationForm" id="submitBtn" style="display:none;margin-top:14px;">SUBMIT REGISTRATION</button><div id="paymentReadyMsg" style="margin-top:10px;font-size:13px;font-weight:800;color:#c40025;text-align:center;">Upload payment screenshot to unlock submit button.</div></div></div>
         </aside>
       </div>
     </section>
@@ -73,7 +73,7 @@
     const GOOGLE_SCRIPT_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
 
     // Paste your official ICAI Pali CIRC UPI ID here.
-    const UPI_ID = "7240610313@pthdfc";
+    const UPI_ID = "YOURUPIID@bank";
     const PAYEE_NAME = "ICAI Pali CIRC";
     const FEE_AMOUNT = "2500";
 
@@ -85,6 +85,9 @@
     const phonePeBtn = document.getElementById('phonePeBtn');
     const copyUpiBtn = document.getElementById('copyUpiBtn');
     const upiQr = document.getElementById('upiQr');
+    const paymentScreenshotInput = document.getElementById('paymentScreenshot');
+    const transactionIdInput = document.getElementById('transactionId');
+    const paymentReadyMsg = document.getElementById('paymentReadyMsg');
 
     function buildUpiLink() {
       const note = 'Udaipur Industrial Visit Registration Fees';
@@ -139,6 +142,23 @@
       });
     }
     setupPayment();
+
+    function toggleSubmitButton() {
+      const hasScreenshot = paymentScreenshotInput.files && paymentScreenshotInput.files.length > 0;
+      const hasUtr = transactionIdInput.value.trim().length > 0;
+      if (hasScreenshot && hasUtr) {
+        submitBtn.style.display = 'block';
+        paymentReadyMsg.style.color = 'green';
+        paymentReadyMsg.textContent = 'Payment details added. You can submit registration now.';
+      } else {
+        submitBtn.style.display = 'none';
+        paymentReadyMsg.style.color = '#c40025';
+        paymentReadyMsg.textContent = 'Enter UTR and upload payment screenshot to unlock submit button.';
+      }
+    }
+    paymentScreenshotInput.addEventListener('change', toggleSubmitButton);
+    transactionIdInput.addEventListener('input', toggleSubmitButton);
+    toggleSubmitButton();
 
     function fileToBase64(file) {
       return new Promise((resolve, reject) => {
@@ -207,6 +227,7 @@
         form.reset();
         document.getElementById('transactionId').value = '';
         document.getElementById('paymentScreenshot').value = '';
+        toggleSubmitButton();
       } catch (error) {
         statusMsg.style.color = '#c40025';
         statusMsg.textContent = 'Submission failed. Please try again.';
