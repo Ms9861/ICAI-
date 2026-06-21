@@ -73,7 +73,7 @@
     const GOOGLE_SCRIPT_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
 
     // Paste your official ICAI Pali CIRC UPI ID here.
-    const UPI_ID = "YOURUPIID@bank";
+    const UPI_ID = "7240610313@pthdfc";
     const PAYEE_NAME = "ICAI Pali CIRC";
     const FEE_AMOUNT = "2500";
 
@@ -92,11 +92,11 @@
     function buildUpiLink() {
       const note = 'Udaipur Industrial Visit Registration Fees';
       const params = new URLSearchParams({
-        pa: 7240610313@pthdfc,
-        pn: MOHD_SOHAIL,
-        am: 2500,
+        pa: UPI_ID,
+        pn: PAYEE_NAME,
+        am: FEE_AMOUNT,
         cu: 'INR',
-        tn: Udaipur Industrial Visit Registration Fees
+        tn: note
       });
       return 'upi://pay?' + params.toString();
     }
